@@ -193,6 +193,7 @@ class Path:
     name: str
     interface: Interface
     cc: CongestionController
+    priority: int = 0
     # Attributes for scheduling
     srtt: float = 0
 
@@ -411,10 +412,10 @@ class RoundRobin(Scheduler):
 
 
 class StrictPriority(Scheduler):
-    """ Chooses the first available path in the given order of paths. """
+    """ Chooses the first available path in a priority list of paths. """
 
     def schedule(self, packet_len: int) -> Optional[Path]:
-        for p in self.paths:
+        for p in sorted(self.paths, key=lambda path: path.priority):
             if not p.blocked(packet_len):
                 return p
 
